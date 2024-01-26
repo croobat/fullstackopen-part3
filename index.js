@@ -1,7 +1,10 @@
 const express = require('express');
+const morgan = require('morgan');
 
 const app = express();
+
 app.use(express.json());
+app.use(morgan('tiny'));
 
 let persons = [
   {
@@ -47,10 +50,12 @@ app.get('/info', (_, res) => {
 app.get('/api/persons/:id', (req, res) => {
   const id = Number(req.params.id);
   const person = persons.find((person) => person.id === id);
+
   if (person) {
-    res.send(person);
+    return res.json(person);
   }
-  res.status(404).end();
+
+  res.status(404).json({ error: 'Person not found' });
 });
 
 app.post('/api/persons', (req, res) => {
