@@ -42,3 +42,12 @@ app.get('/info', (_, res) => {
   const date = new Date();
   res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
 });
+
+app.get('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const person = persons.find((person) => person.id === id);
+  if (person) {
+    res.send(person);
+  }
+  res.status(404).end();
+});
