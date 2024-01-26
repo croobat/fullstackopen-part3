@@ -25,15 +25,20 @@ const persons = [
   },
 ];
 
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.send('<h1>Hello World!</h1>');
 });
 
-app.get('/api/persons', (req, res) => {
+app.get('/api/persons', (_, res) => {
   res.send(persons);
 });
 
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+app.get('/info', (_, res) => {
+  const date = new Date();
+  res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
 });
