@@ -112,9 +112,14 @@ app.post('/api/persons', (req, res) => {
 });
 
 app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id);
-  persons = persons.filter((person) => person.id !== id);
-  res.status(204).end();
+  Person.findByIdAndDelete(req.params.id)
+    .then((_) => {
+      res.status(204).end();
+    })
+    .catch((error) => {
+      console.log('error deleting person:', error.message);
+      res.status(400).send({ error: 'malformatted id' });
+    });
 });
 
 const PORT = process.env.PORT || 3001;
