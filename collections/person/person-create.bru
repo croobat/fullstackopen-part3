@@ -1,0 +1,18 @@
+meta {
+  name: person-create
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/persons
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Karla",
+    "number": "111-111"
+  }
+}
