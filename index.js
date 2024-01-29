@@ -38,10 +38,6 @@ let persons = [
   },
 ];
 
-app.get('/', (_, res) => {
-  res.send('<h1>Welcome to the Phonebook API!</h1>');
-});
-
 app.get('/api/persons', (_, res) => {
   Person.find({})
     .then((persons) => {
@@ -81,7 +77,7 @@ app.get('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
   if (!req.body) {
     return res.status(400).json({
-      error: 'content missing',
+      error: 'body missing',
     });
   }
 
@@ -89,24 +85,30 @@ app.post('/api/persons', (req, res) => {
 
   if (!body.name || !body.number) {
     return res.status(400).json({
-      error: 'content missing',
+      error: `content missing: ${body.name ? 'number' : 'name'}`,
     });
   }
 
-  if (persons.find((person) => person.name === body.name)) {
-    return res.status(400).json({
-      error: 'name must be unique',
-    });
-  }
+  // ignore this check for now
+  // if (persons.find((person) => person.name === body.name)) {
+  //   return res.status(400).json({
+  //     error: 'name must be unique',
+  //   });
+  // }
 
-  const person = {
-    id: Math.floor(Math.random() * 100000000),
+  const person = new Person({
     name: body.name,
     number: body.number,
-  };
+  });
 
-  persons = persons.concat(person);
-  res.json(person);
+  person
+    .save()
+    .then((savedPerson) => {
+      res.json(savedPerson);
+    })
+    .catch((error) => {
+      console.log('error saving person:', error.message);
+    });
 });
 
 app.delete('/api/persons/:id', (req, res) => {
