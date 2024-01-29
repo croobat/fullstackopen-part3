@@ -38,16 +38,6 @@ let persons = [
   },
 ];
 
-app.get('/api/persons', (_, res) => {
-  Person.find({})
-    .then((persons) => {
-      res.json(persons);
-    })
-    .catch((error) => {
-      console.log('error getting persons:', error.message);
-    });
-});
-
 app.get('/info', (_, res) => {
   Person.find({})
     .then((persons) => {
@@ -56,6 +46,16 @@ app.get('/info', (_, res) => {
     })
     .catch((error) => {
       console.log('error getting info:', error.message);
+    });
+});
+
+app.get('/api/persons', (_, res) => {
+  Person.find({})
+    .then((persons) => {
+      res.json(persons);
+    })
+    .catch((error) => {
+      console.log('error getting persons:', error.message);
     });
 });
 
