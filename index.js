@@ -10,10 +10,23 @@ const Person = require('./models/person');
 
 morgan.token('person', (req, _) => (req.method === 'POST' ? JSON.stringify(req.body) : ''));
 
+const errorHandler = (error, _, res, next) => {
+  console.error(error.message);
+
+  if (error.name === 'CastError') {
+    return res.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return res.status(400).send({ error: error.message });
+  }
+
+  next(error);
+};
+
+app.use(express.static('dist'));
 app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'));
 app.use(cors());
-app.use(express.static('dist'));
+app.use(errorHandler);
 
 let persons = [
   {
@@ -38,28 +51,24 @@ let persons = [
   },
 ];
 
-app.get('/info', (_, res) => {
+app.get('/info', (_, res, next) => {
   Person.find({})
     .then((persons) => {
       const date = new Date();
       res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
     })
-    .catch((error) => {
-      console.log('error getting info:', error.message);
-    });
+    .catch((error) => next(error));
 });
 
-app.get('/api/persons', (_, res) => {
+app.get('/api/persons', (_, res, next) => {
   Person.find({})
     .then((persons) => {
       res.json(persons);
     })
-    .catch((error) => {
-      console.log('error getting persons:', error.message);
-    });
+    .catch((error) => next(error));
 });
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   Person.findById(req.params.id)
     .then((person) => {
       if (person) {
@@ -68,13 +77,10 @@ app.get('/api/persons/:id', (req, res) => {
         res.status(404).end();
       }
     })
-    .catch((error) => {
-      console.log('error getting person:', error.message);
-      res.status(400).send({ error: 'malformatted id' });
-    });
+    .catch((error) => next(error));
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
   if (!req.body) {
     return res.status(400).json({
       error: 'body missing',
@@ -106,20 +112,15 @@ app.post('/api/persons', (req, res) => {
     .then((savedPerson) => {
       res.json(savedPerson);
     })
-    .catch((error) => {
-      console.log('error saving person:', error.message);
-    });
+    .catch((error) => next(error));
 });
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
   Person.findByIdAndDelete(req.params.id)
     .then((_) => {
       res.status(204).end();
     })
-    .catch((error) => {
-      console.log('error deleting person:', error.message);
-      res.status(400).send({ error: 'malformatted id' });
-    });
+    .catch((error) => next(error));
 });
 
 const PORT = process.env.PORT || 3001;
