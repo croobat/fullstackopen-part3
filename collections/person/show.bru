@@ -1,10 +1,10 @@
 meta {
-  name: person-destroy
+  name: show
   type: http
-  seq: 4
+  seq: 2
 }
 
-delete {
+get {
   url: {{baseUrl}}/api/persons/{{id}}
   body: none
   auth: none
