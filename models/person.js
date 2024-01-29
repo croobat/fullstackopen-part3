@@ -1,17 +1,17 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
-mongoose.set('strictQuery', false);
+mongoose.set('strictQuery', false)
 
-const url = process.env.MONGODB_URI;
+const url = process.env.MONGODB_URI
 
 mongoose
   .connect(url)
   .then(() => {
-    console.log('connected to MongoDB');
+    console.log('connected to MongoDB')
   })
   .catch((error) => {
-    console.log('error connecting to MongoDB:', error.message);
-  });
+    console.log('error connecting to MongoDB:', error.message)
+  })
 
 const personSchema = new mongoose.Schema({
   name: {
@@ -27,32 +27,32 @@ const personSchema = new mongoose.Schema({
       validator: (v) => {
         // check if has one and only one dash
         if (v.split('-').length !== 2) {
-          return false;
+          return false
         }
 
         // check if the rest of the string is only numbers
-        const numbersWithoutDash = v.split('-').join('');
+        const numbersWithoutDash = v.split('-').join('')
         if (isNaN(numbersWithoutDash)) {
-          return false;
+          return false
         }
 
         // check if there are only 2-3 numbers before dash
-        const numbersBeforeDash = v.split('-')[0];
+        const numbersBeforeDash = v.split('-')[0]
         if (numbersBeforeDash.length < 2 || numbersBeforeDash.length > 3) {
-          return false;
+          return false
         }
       },
       message: (props) => `${props.value} is not a valid phone number!`,
     },
   },
-});
+})
 
 personSchema.set('toJSON', {
   transform: (_, returnedObject) => {
-    returnedObject.id = returnedObject._id.toString();
-    delete returnedObject._id;
-    delete returnedObject.__v;
+    returnedObject.id = returnedObject._id.toString()
+    delete returnedObject._id
+    delete returnedObject.__v
   },
-});
+})
 
-module.exports = mongoose.model('Person', personSchema);
+module.exports = mongoose.model('Person', personSchema)
