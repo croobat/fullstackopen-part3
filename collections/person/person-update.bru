@@ -1,0 +1,22 @@
+meta {
+  name: person-update
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/persons/{{id}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Tony",
+    "number": "123-456-7890"
+  }
+}
+
+vars:pre-request {
+  id: 65b72e5ea53b30dacf84dca6
+}
