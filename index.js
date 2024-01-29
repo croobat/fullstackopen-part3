@@ -1,10 +1,14 @@
+require('dotenv').config();
+
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 
 const app = express();
 
-morgan.token('person', (req, _) => req.method === 'POST' ? JSON.stringify(req.body) : '');
+const Person = require('./models/person');
+
+morgan.token('person', (req, _) => (req.method === 'POST' ? JSON.stringify(req.body) : ''));
 
 app.use(express.json());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :person'));
@@ -35,27 +39,43 @@ let persons = [
 ];
 
 app.get('/', (_, res) => {
-  res.send('<h1>Hello World!</h1>');
+  res.send('<h1>Welcome to the Phonebook API!</h1>');
 });
 
 app.get('/api/persons', (_, res) => {
-  res.send(persons);
+  Person.find({})
+    .then((persons) => {
+      res.json(persons);
+    })
+    .catch((error) => {
+      console.log('error getting persons:', error.message);
+    });
 });
 
 app.get('/info', (_, res) => {
-  const date = new Date();
-  res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
+  Person.find({})
+    .then((persons) => {
+      const date = new Date();
+      res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${date}</p>`);
+    })
+    .catch((error) => {
+      console.log('error getting info:', error.message);
+    });
 });
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.find((person) => person.id === id);
-
-  if (person) {
-    return res.json(person);
-  }
-
-  res.status(404).json({ error: 'Person not found' });
+  Person.findById(req.params.id)
+    .then((person) => {
+      if (person) {
+        res.json(person);
+      } else {
+        res.status(404).end();
+      }
+    })
+    .catch((error) => {
+      console.log('error getting person:', error.message);
+      res.status(400).send({ error: 'malformatted id' });
+    });
 });
 
 app.post('/api/persons', (req, res) => {
