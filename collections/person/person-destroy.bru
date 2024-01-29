@@ -1,0 +1,15 @@
+meta {
+  name: person-destroy
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{baseUrl}}/api/persons/{{id}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  id: 65b70bb5f4d1b2a59536435e
+}
