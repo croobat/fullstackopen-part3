@@ -19,7 +19,32 @@ const personSchema = new mongoose.Schema({
     minlength: 3,
     required: true,
   },
-  number: String,
+  number: {
+    type: String,
+    minlength: 8,
+    required: true,
+    validate: {
+      validator: (v) => {
+        // check if has one and only one dash
+        if (v.split('-').length !== 2) {
+          return false;
+        }
+
+        // check if the rest of the string is only numbers
+        const numbersWithoutDash = v.split('-').join('');
+        if (isNaN(numbersWithoutDash)) {
+          return false;
+        }
+
+        // check if there are only 2-3 numbers before dash
+        const numbersBeforeDash = v.split('-')[0];
+        if (numbersBeforeDash.length < 2 || numbersBeforeDash.length > 3) {
+          return false;
+        }
+      },
+      message: (props) => `${props.value} is not a valid phone number!`,
+    },
+  },
 });
 
 personSchema.set('toJSON', {
