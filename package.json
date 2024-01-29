@@ -10,7 +10,8 @@
     "build:ui": "rm -rf dist && cd ../fullstackopen/part3/phonebook-front && pnpm run build -- --production && cp -r dist ../../../fullstackopen-phonebook-back",
     "deploy": "fly deploy",
     "deploy:full": "pnpm run build:ui && fly deploy",
-    "logs:prod": "fly logs"
+    "logs:prod": "fly logs",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@flydotio/dockerfile": "^0.5.0",
+    "eslint": "^8.56.0",
     "nodemon": "^3.0.3"
   }
 }
